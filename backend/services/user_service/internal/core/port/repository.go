@@ -1,11 +1,16 @@
 package port
 
-import "user_service/internal/core/domain"
+import (
+	"context"
+	"user_service/internal/core/domain"
+)
 
 type UserRepository interface {
 	// Write methods (บันทึกลง DB)
-	Save(user *domain.User) error
-	Update(user *domain.User) error
+	Save(ctx context.Context, user *domain.User) error
+	Update(ctx context.Context, user *domain.User) error
 
 	// Read methods (ดึงจาก DB)
+	FindById(ctx context.Context, id int) (*domain.User, error)
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 }

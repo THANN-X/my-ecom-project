@@ -1,9 +1,11 @@
 package domain
 
-import "time"
+import (
+	"gorm.io/gorm"
+)
 
 type User struct {
-	UserID    int
+	gorm.Model
 	FirstName string
 	LastName  string
 	Email     string
@@ -11,7 +13,4 @@ type User struct {
 	Phone     string
 	Address   string
 	Role      string
-	CreatedAt time.Duration
-	UpdatedAt time.Duration
-	DeletedAt time.Duration
 }
