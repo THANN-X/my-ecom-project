@@ -14,15 +14,14 @@ func NewUserService(repo port.UserRepository) port.UserService {
 	return &userService{repo: repo}
 }
 
-func (s *userService) Register(ctx context.Context, newUser *domain.User) (*domain.User, error) {
+func (s *userService) Register(ctx context.Context, user *domain.User) error {
 	// Implementation of user registration logic
-	newUser = &domain.User{}
 	// Save user to repository
-	if err := s.repo.Save(ctx, newUser); err != nil {
-		return nil, err
+	if err := s.repo.Save(ctx, user); err != nil {
+		return err
 	}
 
-	return newUser, nil
+	return nil
 }
 
 func (s *userService) UpdateProfile(ctx context.Context, id *domain.User) error {
@@ -35,9 +34,13 @@ func (s *userService) ChangePassword(ctx context.Context, id *domain.User) error
 	return nil
 }
 
-func (s *userService) GetUserProfile(ctx context.Context, id *domain.User) (*domain.User, error) {
+func (s *userService) GetUserProfile(ctx context.Context, id int) (*domain.User, error) {
 	// Implementation of get user profile logic
-	return nil, nil
+	user, err := s.repo.FindById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (s *userService) Login(ctx context.Context, email, password string) (string, error) {

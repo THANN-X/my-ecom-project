@@ -86,6 +86,7 @@ func main() {
 	// fmt.Println("Updated user:", user)
 	// fmt.Println("User deleted successfully")
 	app.Post("/register", userHandler.RegisterUser)
+	app.Get("/profile/:id", userHandler.GetUserProfile)
 
 	app.Listen(":3000")
 }
