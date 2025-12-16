@@ -7,7 +7,7 @@ import (
 
 type UserService interface {
 	// ส่วนที่เปรียบเสมือน COMMAND (Write / Action)
-	Register(ctx context.Context, email, password string) (*domain.User, error)
+	Register(ctx context.Context, newUser *domain.User) (*domain.User, error)
 	UpdateProfile(ctx context.Context, id *domain.User) error
 	ChangePassword(ctx context.Context, id *domain.User) error
 
