@@ -20,16 +20,17 @@ func NewUserRepositoryDB(db *gorm.DB) port.UserRepository {
 }
 
 // 3. Implement interface methods from port.UserRepository
-func (r *userRepositoryDB) AllUsers(ctx context.Context) ([]domain.User, error) {
-	users := []domain.User{}
-	result := r.db.WithContext(ctx).Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return users, nil
-}
+// func (r *userRepositoryDB) AllUsers(ctx context.Context) ([]domain.User, error) {
+// 	users := []domain.User{}
+// 	result := r.db.WithContext(ctx).Find(&users)
+// 	if result.Error != nil {
+// 		return nil, result.Error
+// 	}
+// 	return users, nil
+// }
 
-func (r *userRepositoryDB) Save(ctx context.Context, user *domain.User) error {
+// 4. CRUD Operations
+func (r *userRepositoryDB) Create(ctx context.Context, user *domain.User) error {
 	if err := r.db.Create(user); err != nil {
 		return err.Error
 	}
@@ -62,7 +63,7 @@ func (r *userRepositoryDB) Delete(ctx context.Context, id int) error {
 	return nil
 }
 
-func (r *userRepositoryDB) FindById(ctx context.Context, id int) (*domain.User, error) {
+func (r *userRepositoryDB) FindByID(ctx context.Context, id int) (*domain.User, error) {
 	user := &domain.User{}
 	result := r.db.WithContext(ctx).First(user, id)
 

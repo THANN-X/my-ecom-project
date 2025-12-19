@@ -17,7 +17,7 @@ func NewUserService(repo port.UserRepository) port.UserService {
 func (s *userService) Register(ctx context.Context, user *domain.User) error {
 	// Implementation of user registration logic
 	// Save user to repository
-	if err := s.repo.Save(ctx, user); err != nil {
+	if err := s.repo.Create(ctx, user); err != nil {
 		return err
 	}
 
@@ -36,7 +36,7 @@ func (s *userService) ChangePassword(ctx context.Context, id *domain.User) error
 
 func (s *userService) GetUserProfile(ctx context.Context, id int) (*domain.User, error) {
 	// Implementation of get user profile logic
-	user, err := s.repo.FindById(ctx, id)
+	user, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

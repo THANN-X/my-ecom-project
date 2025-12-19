@@ -8,33 +8,33 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type HttpUserHandler struct {
+type UserHandler struct {
 	// Handler fields and methods
-	service port.UserService
+	svc port.UserService
 }
 
-func NewHttpUserHandler(service port.UserService) *HttpUserHandler {
-	return &HttpUserHandler{service: service}
+func NewUserHandler(svc port.UserService) *UserHandler {
+	return &UserHandler{svc: svc}
 }
 
-func (h *HttpUserHandler) GetUserProfile(c *fiber.Ctx) error {
+func (h *UserHandler) GetUserProfile(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid user ID",
 		})
 	}
-	user, err := h.service.GetUserProfile(c.Context(), id)
+	user, err := h.svc.GetUserProfile(c.Context(), id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to get user profile",
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(user)
+	return c.Status(fiber.StatusOK).JSON(user)
 }
 
-func (h *HttpUserHandler) RegisterUser(c *fiber.Ctx) error {
+func (h *UserHandler) RegisterUser(c *fiber.Ctx) error {
 	// Handler logic for user registration
 	user := &domain.User{}
 	if err := c.BodyParser(&user); err != nil {
@@ -42,7 +42,7 @@ func (h *HttpUserHandler) RegisterUser(c *fiber.Ctx) error {
 			"error": "Invalid request body",
 		})
 	}
-	err := h.service.Register(c.Context(), user)
+	err := h.svc.Register(c.Context(), user)
 
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

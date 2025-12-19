@@ -1,9 +1,9 @@
-version: '3.8'
+
 
 services:
-  postgres:
+  user-db:
     image: postgres:17
-    container_name: postgres
+    container_name: user-db
     environment:
       POSTGRES_DB: user
       POSTGRES_USER: myuser
@@ -12,6 +12,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports: 
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d user"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   pgadmin:
@@ -23,8 +28,34 @@ services:
     ports:
       - "5050:80"
     depends_on:
-      - postgres
+      - user-db
     restart: unless-stopped
+
+      # Application Services
+  user_service:
+    build: ./backend/services/user_service
+    container_name: user_service
+    ports:
+      - "3001:3001"
+    depends_on:
+        user-db:
+          condition: service_healthy
+    environment:
+      - APP_PORT=3001
+      - DB_HOST=user-db
+
+  bff_service:
+    build: ./backend/bff
+    container_name: bff_service
+    ports: 
+      - "8080:8080"
+    environment:
+      - APP_PORT=8080
+        # Database connection details
+      - USER_SERVICE_URL=user_service:3001
+    depends_on:
+      - user_service
 
 volumes:
   postgres_data:
+

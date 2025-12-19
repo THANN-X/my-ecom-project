@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"user_service/internal/adapter/handler/httphandler"
 	"user_service/internal/adapter/repository"
 	"user_service/internal/core/domain"
@@ -13,7 +14,7 @@ import (
 )
 
 const (
-	host     = "localhost"
+	// host     = "localhost"
 	port     = 5432
 	user     = "myuser"
 	password = "mypassword"
@@ -22,11 +23,16 @@ const (
 
 func main() {
 
-	app := fiber.New()
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+
+	fmt.Println(dbHost)
 
 	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
+		dbHost, port, user, password, dbname)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		DryRun: false,
@@ -43,7 +49,7 @@ func main() {
 
 	userRepository := repository.NewUserRepositoryDB(db)
 	userService := service.NewUserService(userRepository)
-	userHandler := httphandler.NewHttpUserHandler(userService)
+	userHandler := httphandler.NewUserHandler(userService)
 
 	// ctx := context.Background()
 
@@ -85,8 +91,11 @@ func main() {
 	//fmt.Println("User saved successfully:", user)
 	// fmt.Println("Updated user:", user)
 	// fmt.Println("User deleted successfully")
-	app.Post("/register", userHandler.RegisterUser)
-	app.Get("/profile/:id", userHandler.GetUserProfile)
 
-	app.Listen(":3000")
+	app := fiber.New()
+
+	app.Post("/register", userHandler.RegisterUser)
+	app.Get("/users/:id", userHandler.GetUserProfile)
+
+	app.Listen(":3001")
 }
