@@ -23,7 +23,7 @@ func NewUserHTTPClient(baseURL string) port.UserClientPort {
 
 func (c *UserHTTPClient) FetchUser(id string) (*dto.UserRawdata, error) {
 	// Implement the logic to make an HTTP request to fetch user data
-	resp, err := c.client.Get(c.baseURL + "/users/" + id)
+	resp, err := c.client.Get("http://" + c.baseURL + "/users/" + id)
 	if err != nil {
 		return nil, err
 	}

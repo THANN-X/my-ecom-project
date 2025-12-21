@@ -4,6 +4,7 @@ import (
 	"bff/internal/adapter/client"
 	"bff/internal/adapter/handler"
 	"bff/internal/core/service"
+	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,8 +16,10 @@ func main() {
 	userServiceURL := os.Getenv("USER_SERVICE_URL")
 
 	if userServiceURL == "" {
-		userServiceURL = "http://user_service:3001"
+		userServiceURL = "http://localhost:3001"
 	}
+
+	fmt.Println(userServiceURL)
 
 	userClient := client.NewUserHTTPClient(userServiceURL)
 	// Initialize services

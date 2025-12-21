@@ -1,16 +1,17 @@
 package domain
 
-import (
-	"gorm.io/gorm"
-)
+import "time"
 
 type User struct {
-	gorm.Model
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email" gorm:"unique:not null;"`
-	Password  string `json:"password" gorm:"not null;"`
-	Phone     string `json:"phone"`
-	Address   string `json:"address"`
-	Role      string `json:"role" gorm:"default:customer;"`
+	ID        uint
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time
+	FirstName string
+	LastName  string
+	Email     string
+	Password  string
+	Phone     string
+	Address   string
+	Role      string
 }

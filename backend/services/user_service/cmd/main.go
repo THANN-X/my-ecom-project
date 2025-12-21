@@ -13,27 +13,36 @@ import (
 	"gorm.io/gorm"
 )
 
-const (
-	// host     = "localhost"
-	port     = 5432
-	user     = "myuser"
-	password = "mypassword"
-	dbname   = "user"
-)
-
 func main() {
-
+	// Load database configuration from environment variables
 	dbHost := os.Getenv("DB_HOST")
 	if dbHost == "" {
 		dbHost = "localhost"
 	}
 
+	dbPort := os.Getenv("DB_PORT")
+	if dbPort == "" {
+		dbPort = "5432"
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+
 	fmt.Println(dbHost)
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		dbHost, port, user, password, dbname)
+	// dsn := fmt.Sprintf("host=%s port=%d user=%s "+
+	// 	"password=%s dbname=%s sslmode=disable",
+	// 	dbHost, port, user, password, dbname)
 
+	// Connect to the database
+	dsn := fmt.Sprintf("host=%s port=%s user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		dbHost, dbPort, dbUser, dbPassword, dbName)
+
+	fmt.Println(dsn)
+
+	// Open database connection
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		DryRun: false,
 	})
@@ -47,6 +56,7 @@ func main() {
 	db.AutoMigrate(domain.User{})
 	fmt.Println("Database migration completed!")
 
+	// Initialize repository, service, and handler
 	userRepository := repository.NewUserRepositoryDB(db)
 	userService := service.NewUserService(userRepository)
 	userHandler := httphandler.NewUserHandler(userService)
@@ -92,10 +102,16 @@ func main() {
 	// fmt.Println("Updated user:", user)
 	// fmt.Println("User deleted successfully")
 
+	// Initialize Fiber app and routes
 	app := fiber.New()
 
-	app.Post("/register", userHandler.RegisterUser)
+	// Define routes
+	app.Post("/users/register", userHandler.RegisterUser)
+	app.Post("/users/update/:id", userHandler.UpdateUserProfile)
+	app.Post("/users/chgpass/:id", userHandler.ChangePassword)
+	app.Post("/users/login", userHandler.LoginUser)
 	app.Get("/users/:id", userHandler.GetUserProfile)
 
+	// Start the server
 	app.Listen(":3001")
 }
